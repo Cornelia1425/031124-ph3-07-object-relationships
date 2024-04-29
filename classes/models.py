@@ -12,6 +12,9 @@ class Garage:
     def __repr__(self):
         return f"Garage(address={self.address})"
     
+    def cars(self):
+        return [car for car in Car.all_cars if car.garage ==self]
+    
 
 # CAR ### BELONGS TO A GARAGE
 class Car:
@@ -30,6 +33,17 @@ class Car:
 
 
 
+@property
+def garage(self):
+    return self._garage
+
+@garage.setter
+def garage(self, value):
+    if  type(value) == Garage:
+        self._garage = value #if no_, its gonna run itself repeatedly, self.garage find a call of a setter, so it keep running
+    else:
+        raise TypeError("Must be of type Garage")
+    
 
 ##############################
 ##############################
@@ -53,6 +67,15 @@ class Doctor:
     def __repr__(self):
         return f"Doctor(name={self.name}, specialty={self.specialty})"
     
+    def get_appointments(self): #use list comprehension - for in if
+        return [apt for apt in Appointment.all_appts if apt.doctor ==self]
+    
+    def get_patients(self):
+        my_patients=[apt.patient for apt in Appointment.all_appts if apt.doctor ==self]
+        unique_patients =  set(my_patients)
+        return list(unique_patients)
+        # return [apt.patient for apt in Appointment.all_appts if apt.doctor ==self]
+    
 
 # PATIENT ###
 class Patient:
@@ -66,6 +89,14 @@ class Patient:
 
     def __repr__(self):
         return f"Patient(first_name={self.first_name}, last_name={self.last_name})"
+    
+    def get_appointments(self):
+        return [apt for apt in Appointment.all_appts if apt.patient ==self]
+    
+    def get_doctors(self):
+        return [apt.doctor for apt in Appointment.all_appts if apt.patient== self]
+
+        
 
 
 # APPT ###
@@ -73,14 +104,37 @@ class Appointment:
 
     all_appts = []
 
-    def __init__(self):
+    def __init__(self, doctor:Doctor, patient:Patient):
+        self.doctor = doctor
+        self.patient = patient
         Appointment.all_appts.append(self)
 
     def __repr__(self):
         return f"Appointment(patient={self.patient.first_name}, doctor={self.doctor.name})"
     
     
+    @property
+    def doctor (self):
+        return self._doctor
 
+    @doctor.setter
+    def doctor(self, value):
+        if type(value)==Doctor:
+            self._doctor =value
+        else:
+            raise TypeError ("Must be of type Doctor")
+        
+
+    @property 
+    def patient (self): #getter
+        return self._patient
+
+    @patient.setter
+    def patient(self, value): #setter
+        if type(value)==Patient:
+            self._patient =value
+        else:
+            raise TypeError ("Must be of type Patient")
 
 ##############################
 ##############################
